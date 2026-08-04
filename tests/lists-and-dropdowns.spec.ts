@@ -8,7 +8,6 @@ test.beforeEach( async({page}) => {
         test.beforeEach(async ({ page }) => {
             //1. Select the OWNERS menu item in the navigation bar and then select "Search" from the drop-down menu
             await page.getByRole('button', {name: 'Owners'}).click()
-            //await expect(page.locator('li.dropdown.open .dropdown-menu')).toBeVisible()
             await page.getByRole('link', {name: 'Search'}).click()
         })
 
@@ -38,12 +37,10 @@ test.beforeEach( async({page}) => {
         //8. Add the assertion that the value "cat" is displayed in the "Type" field 
         await expect(page.locator('#type1.form-control')).toHaveValue('cat')
 
-        //9. Using a loop, select the values from the drop-down one by one, 
-        // and add the assertion that every selected value from the drop-down is displayed in the "Type" field
+        //9. Using a loop, select the values from the drop-down one by one, and add the assertion that every selected value from the drop-down is displayed in the "Type" field
         const petTypeDropDownMenu = page.locator('#type')
         const petTypes = await petTypeDropDownMenu.locator('option').all()
         for(const petType of petTypes){
-                //await petTypeDropDownMenu.click()
                 const value = await petType.getAttribute('value')
                 if(value !== null){ {
                     await page.locator('#type.form-control').selectOption(value)
