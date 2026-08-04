@@ -48,8 +48,6 @@ test.beforeEach( async({page}) => {
                 }
             }
         }
-
-        console.log('Validate selected pet types from the list successfully!')
     })
 
     test('2. Validate the pet type update', async ({ page }) => {
@@ -99,7 +97,5 @@ test.beforeEach( async({page}) => {
         }
         await updatePetButton.click()
         await expect(petType.locator('dd').nth(2)).toHaveText('dog')
-
-        console.log('Validate the pet type update successfully!')
     })
 })
