@@ -20,7 +20,7 @@ test.beforeEach( async({page}) => {
 
         //4. Add the assertion for the owner "Name", the value "George Franklin" is displayed
         await expect(page.getByRole('heading', { name: 'Owner Information'})).toBeVisible()
-        await expect(page.locator('tr b')).toHaveText('George Franklin')
+        await expect(page.locator('tr', { hasText: 'Name' }).locator('td b')).toHaveText('George Franklin')
 
         //5. In the "Pets and Visits" section, click on "Edit Pet" button for the pet with the name "Leo"
         await page.locator('tr', { hasText: 'Leo' }).getByRole('button', { name: 'Edit Pet' }).click()
@@ -29,19 +29,19 @@ test.beforeEach( async({page}) => {
         await expect(page.getByRole('heading')).toHaveText('Pet')
 
         //7. Add the assertion "George Franklin" name is displayed in the "Owner" field
-        await expect(page.locator('#owner_name.form-control')).toHaveValue('George Franklin')
+        await expect(page.locator('#owner_name')).toHaveValue('George Franklin')
         
-        //8. Add the assertion that the value "cat" is displayed in the "Type" field 
-        await expect(page.locator('#type1.form-control')).toHaveValue('cat')
+        //8. Add the assertion that the value "cat" is displayed in the "Type" field
+        const petTypeField = page.locator('#type1')
+        await expect(petTypeField).toHaveValue('cat')
 
         //9. Using a loop, select the values from the drop-down one by one, and add the assertion that every selected value from the drop-down is displayed in the "Type" field
-        const petTypeDropDownMenu = page.locator('#type.form-control')
-        const petTypesAll = await petTypeDropDownMenu.locator('option').all()
-        for(const petType of petTypesAll){
+        const petTypeDropDownMenu = page.locator('#type')
+        for(const petType of await petTypeDropDownMenu.locator('option').all()){
             const value = await petType.getAttribute('value')
-            if(value !== null) {
+            if(value != null) {
                 await petTypeDropDownMenu.selectOption(value)
-                await expect(petTypeDropDownMenu).toHaveValue(value)
+                await expect(petTypeField).toHaveValue(value)
             }
         }
     })
