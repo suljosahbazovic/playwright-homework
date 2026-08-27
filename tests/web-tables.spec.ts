@@ -13,15 +13,15 @@ test.describe('Petclinic Web Tables', () => {
 
     test('1. Validate the pet name city of the owner', async ({ page }) => {
         //2. In the list of Owners, locate the owner by the name "Jeff Black". Add the assertions that this owner is from the city of "Monona" and he has a pet with a name "Lucky"
-        const targetRowByOwner = page.getByRole('row', {name: 'Jeff Black'})
-        await expect(targetRowByOwner).toContainText('Monona')
-        await expect(targetRowByOwner).toContainText('Lucky')
+        const jeffBlackOwnerRow = page.getByRole('row', {name: 'Jeff Black'})
+        await expect(jeffBlackOwnerRow).toContainText('Monona')
+        await expect(jeffBlackOwnerRow).toContainText('Lucky')
     })
 
     test('2. Validate owners count of the Madison city', async ({ page }) => {
         //2. In the list of Owners, locate all owners who live in the city of "Madison". Add the assertion that the total number of owners should be 4
-        const targetRowByCity = page.getByRole('row', {name: 'Madison'}).filter({has: page.locator('td').nth(2).getByText('Madison')})
-        await expect(targetRowByCity).toHaveCount(4)
+        const ownerRowsInMadison = page.getByRole('row', {name: 'Madison'}).filter({has: page.locator('td').nth(2).getByText('Madison')})
+        await expect(ownerRowsInMadison).toHaveCount(4)
     })
 
     test('3. Validate search by Last Name', async ({ page }) => {
@@ -104,8 +104,8 @@ test('6. Validate specialty update', async ({ page }) => {
     await page.getByRole('link', {name: 'All'}).click()
     
     //2. On the Veterinarians page, add the assertion that "Rafael Ortega" has specialty "surgery"
-    const targetRowBySpecialties = page.getByRole('row', {name: 'Rafael Ortega'})
-    await expect(targetRowBySpecialties).toContainText('surgery')
+    const rafaelOrtegaRowBySpecialties = page.getByRole('row', {name: 'Rafael Ortega'})
+    await expect(rafaelOrtegaRowBySpecialties).toContainText('surgery')
 
     //3. Select the SPECIALTIES menu item in the navigation bar
     await page.getByRole('link', {name: 'Specialties'}).click()
@@ -113,26 +113,60 @@ test('6. Validate specialty update', async ({ page }) => {
     //4. Add assertion of the "Specialties" header displayed above the table
     await expect(page.getByRole('heading')).toHaveText('Specialties')
 
-    //5. Click on "Edit" button for the "surgery" specialty
-    const surgeryRow = page.getByRole('row', { name: 'surgery' })
-    await surgeryRow.getByRole('button', { name: 'Edit' }).click()
+    //5. Click on "Edit" button for the "surgery" specialty    
+    const surgerySpecialtiesRow = page.getByRole('row', { name: 'surgery' })
+    const surgerySpecialtiesInput = surgerySpecialtiesRow.locator('input')
+    const surgerySpecialtiesEditButton = surgerySpecialtiesRow.getByRole('button', { name: 'Edit' })
+    await surgerySpecialtiesEditButton.click()
 
     //6. Add assertion "Edit Specialty" page is displayed
     await expect(page.getByRole('heading')).toHaveText('Edit Specialty')
 
     //7. Update the specialty from "surgery" to "dermatology" and click "Update button"
+    await page.waitForResponse('**/specialties/*')
     await page.getByRole('textbox').fill('dermatology')
     await page.getByRole('button', { name: 'Update' }).click()
 
-    // const specialtyInput = page.locator('#name')
-    // await specialtyInput.fill('dermatology')
-    // console.log('Input:', await specialtyInput.inputValue())
-    // const responsePromise = page.waitForResponse(response =>
-    //     response.url().includes('/specialties/4831') &&
-    //     response.request().method() === 'PUT'
-    // )
-    // await page.getByRole('button', { name: 'Update' }).click()
-    // const response = await responsePromise
-    // console.log('Request body:', response.request().postData())
+    //8. Add an assertion that "surgery" was changed to "dermatology" in the list of specialties
+    const dermatologySpecialtiesRowUpdate = page.getByRole('row', { name: 'dermatology' })
+    await expect(dermatologySpecialtiesRowUpdate.locator('input')).toHaveValue('dermatology')
+
+    //9. Select the VETERINARIANS menu item in the navigation bar, then select "All"
+    await page.getByRole('button', {name: 'Veterinarians'}).click()
+    await page.getByRole('link', {name: 'All'}).click()
+
+    //10. On the Veterinarians page, add an assertion that "Rafael Ortega" has specialty in dermatology"
+    await expect(rafaelOrtegaRowBySpecialties).toContainText('dermatology')
+
+    //11. Navigate to the SPECIALTIES page, revert the changes, renaming "dermatology" back to "surgery"
+    await page.getByRole('link', {name: 'Specialties'}).click()
+    await expect(page.getByRole('heading')).toHaveText('Specialties')
+
+    const dermatologySpecialtiesEditButton = dermatologySpecialtiesRowUpdate.getByRole('button', { name: 'Edit' })
+    await dermatologySpecialtiesEditButton.click()
+
+    await expect(page.getByRole('heading')).toHaveText('Edit Specialty')
+
+    await page.waitForResponse('**/specialties/*')
+    await page.getByRole('textbox').fill('surgery')
+    await page.getByRole('button', { name: 'Update' }).click()
+
+    await expect(surgerySpecialtiesInput).toHaveValue('surgery')
+})
+
+test('7. Validate specialty lists', async ({ page }) => {
+    //1. Select the SPECIALTIES menu item in the navigation bar
+    await page.getByRole('link', {name: 'Specialties'}).click()
+
+    //2. On the Specialties page, select "Add" button. Type the new specialty "oncology" and click "Save" button
+    const addNewSpecialtySection = page.locator('app-specialty-add', { hasText: 'New Specialty' })
+    const addNewSpecialtyButton = page.getByRole('button', { name: 'Add' })
+    await addNewSpecialtyButton.click()
     
+    await addNewSpecialtySection.getByRole('textbox').fill('oncology')
+    await addNewSpecialtySection.getByRole('button', { name: 'Save' }).click()
+
+    //3. Extract all values of specialties and put them into the array.
+
+
 })
