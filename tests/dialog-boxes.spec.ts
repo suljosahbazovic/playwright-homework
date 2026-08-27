@@ -18,18 +18,18 @@ test.describe('NavBar PET TYPES', () => {
     await page.getByRole('button', {name: 'Add'}).click()
 
     //4. Add assertions of "New Pet Type" section title, "Name" header for the input field and the input field is visible
-    const newPetTypeNameInputField = page.locator('app-pettype-add', { hasText: 'New Pet Type'})
-    await expect(newPetTypeNameInputField.getByRole('heading')).toHaveText('New Pet Type')
-    await expect(newPetTypeNameInputField.getByText('Name')).toHaveText('Name')
-    await expect(newPetTypeNameInputField.locator('#name')).toBeVisible()    
+    const newPetTypeSection = page.locator('app-pettype-add', { hasText: 'New Pet Type'})
+    await expect(newPetTypeSection.getByRole('heading')).toHaveText('New Pet Type')
+    await expect(newPetTypeSection.locator('label')).toHaveText('Name')
+    await expect(newPetTypeSection.locator('#name')).toBeVisible()    
 
     //5. Add a new pet type with the name "pig" and click "Save" button
-    await newPetTypeNameInputField.getByRole('textbox').fill('pig')
-    await newPetTypeNameInputField.getByRole('button', { name: 'Save'}).click()
+    await newPetTypeSection.getByRole('textbox').fill('pig')
+    await newPetTypeSection.getByRole('button', { name: 'Save'}).click()
 
     //6. Add an assertion that the last item in the list of pet types has the value of "pig"
-    const petTypesNameItem = page.locator('#pettypes tbody tr').last()
-    await expect(petTypesNameItem.locator('input[name="pettype_name"]')).toHaveValue('pig')
+    const lastPetTypeRow = page.locator('#pettypes tbody tr').last()
+    await expect(lastPetTypeRow.locator('input')).toHaveValue('pig')
 
     //7. Click on the "Delete" button for the "pig" pet type
     //8. Add an assertion to validate the message of the dialog box "Delete the pet type?"
@@ -38,9 +38,10 @@ test.describe('NavBar PET TYPES', () => {
         expect(dialog.message()).toEqual('Delete the pet type?')        
         await dialog.accept()
     })
-    await petTypesNameItem.getByRole('button', {name: 'Delete'}).last().click()
+    await lastPetTypeRow.getByRole('button', {name: 'Delete'}).click()
 
     //10. Add an assertion that the last item in the list of pet types is not the "pig"
-    await expect(petTypesNameItem.locator('input[name="pettype_name"]')).not.toHaveValue('pig')
+    await page.waitForResponse('**/pettypes/*')
+    await expect(page.locator('[name="pettype_name"]').last()).not.toHaveValue('pig')
   })
 })
