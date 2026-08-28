@@ -164,9 +164,48 @@ test('7. Validate specialty lists', async ({ page }) => {
     await addNewSpecialtyButton.click()
     
     await addNewSpecialtySection.getByRole('textbox').fill('oncology')
-    await addNewSpecialtySection.getByRole('button', { name: 'Save' }).click()
+    await Promise.all([page.waitForResponse('**/api/specialties'), addNewSpecialtySection.getByRole('button', { name: 'Save' }).click()])
 
     //3. Extract all values of specialties and put them into the array.
+    const allValuesOfSpecialties: string[] = []
+    const specialtyRows = page.locator('#specialties tbody tr')
 
+    for(const row of await specialtyRows.all()) {
+        const specialtyValue = await row.locator('input').inputValue()
+        allValuesOfSpecialties.push(specialtyValue)
+    }
 
+    //4. Select the VETERINARIANS menu item in the navigation bar, then select "All"
+    await page.getByRole('button', {name: 'Veterinarians'}).click()
+    await page.getByRole('link', {name: 'All'}).click()
+
+    //5. On the Veterinarians page, locate the "Sharon Jenkins" in the list and click "Edit" button
+    const sharonJenkinsRowVeterinarians = page.getByRole('row', { name: 'Sharon Jenkins' })
+    const sharonJenkinsEditButtonVeterinarians = sharonJenkinsRowVeterinarians.getByRole('button', { name: 'Edit Vet' })
+    await sharonJenkinsEditButtonVeterinarians.click()
+
+    //6. Click on the Specialties drop-down menu. Extract all values from the drop-down menu to an array
+    await page.locator('.dropdown-display').click()
+    const specialtiesOptionsFromDropDown = await page.locator('.dropdown-content div').allTextContents()
+
+    //7. Add the assertion that the array of specialties collected in step 3 is equal the the array from drop-down menu
+    expect(specialtiesOptionsFromDropDown).toEqual(allValuesOfSpecialties)
+
+    //8. Select the "oncology" specialty and click "Save vet" button
+    await page.getByRole('checkbox', { name: 'oncology'}).check()
+    await page.locator('.dropdown-display').click()
+    await page.getByRole('button', { name: 'Save vet' }).click()
+
+    //9. On the Veterinarians page, add assertion that "Sharon Jenkins" has a specialty "oncology"
+    await expect(sharonJenkinsRowVeterinarians).toContainText('oncology')
+
+    //10. Navigate to the SPECIALTIES page. Click "Delete" for "oncology" specialty
+    await page.getByRole('link', {name: 'Specialties'}).click()
+    const oncologySpecialtiesDeleteRow = page.getByRole('row', { name: 'oncology' })
+    await oncologySpecialtiesDeleteRow.getByRole('button', { name: 'Delete' }).click()
+
+    //11. Navigate to the VETERINARIANS page. Add an assertion that "Sharon Jenkins" has no specialty assigned
+    await page.getByRole('button', {name: 'Veterinarians'}).click()
+    await page.getByRole('link', {name: 'All'}).click()
+    await expect(sharonJenkinsRowVeterinarians).not.toContainText('oncology')
 })
