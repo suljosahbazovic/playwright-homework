@@ -19,9 +19,6 @@ test.beforeEach( async({page}) => {
         await page.getByRole('button', { name: 'Add New Pet' }).click()
 
         //4. In the Name field, type any new pet name, for example, "Tom"
-        // const newPetForm = page.locator('app-pet-add form')
-        // const newPetNameInput = newPetForm.locator('#name')
-        // await newPetNameInput.fill('Tom')
         await page.getByRole('textbox', { name: 'Name' }).fill('Tom')
 
         //5. Add the assertion of icon in the input field, that it changed from "X" to "V"
@@ -40,13 +37,9 @@ test.beforeEach( async({page}) => {
         await page.getByRole('gridcell', { name: '2014/05/02' }).click()
       
         //8. Add the assertion of the input field is in the format "2014/05/02"
-        // const birthDateInputFieldFormat = page.locator('input[name="birthDate"]')
-        // await expect(birthDateInputFieldFormat).toHaveValue('2014/05/02')
         await expect(page.locator('input[name="birthDate"]')).toHaveValue('2014/05/02')
 
         //9. Select the type of pet "dog" and click "Save Pet" button
-        // const petTypeDropDownMenuSelect = page.locator('#type')
-        // await petTypeDropDownMenuSelect.selectOption('dog')
         await page.locator('#type').selectOption('dog')
         await page.getByRole('button', { name: 'Save Pet' }).click()
 
@@ -75,7 +68,6 @@ test.beforeEach( async({page}) => {
         await expect(page.getByRole('heading', { name: 'New Visit' })).toBeVisible()
 
         //5. Add the assertion that the pet name is "Samantha" and owner's name is "Jean Coleman"
-        //await page.waitForResponse('**/api/owners/*')
         await expect(page.locator('app-visit-add').filter({ hasText: 'Pet' }).getByText('Samantha')).toBeVisible()
         await expect(page.locator('app-visit-add').filter({ hasText: 'Pet' }).getByText('Jean Coleman')).toBeVisible()
 
@@ -92,12 +84,10 @@ test.beforeEach( async({page}) => {
         await expect(page.locator('input[name="date"]')).toHaveValue(selectedDate)
 
         //8. Type the description in the field, for example, "dermatologists visit" and click "Add Visit" button
-        //await page.getByRole('textbox', { name: 'description' }).fill('dermatologists visit')
         await page.locator('#description').fill('dermatologists visit')
         await page.getByRole('button', { name: 'Add Visit' }).click()
 
         //9. Add an assertion that the selected date of visit is displayed at the top of the list of visits for "Samantha" pet on the "Owner Information" page and is in the format "YYYY-MM-DD"
-        //const selectedVisitDate = `${currentDate.getFullYear()}-${currentMonth}-${currentDay}`
         await expect(samanthaPetSection.locator('app-visit-list tr').nth(1).locator('td').first()).toHaveText(selectedDate.replace(/\//g, '-'))
 
         //10. Add one more visit for "Samantha" pet by clicking "Add Visit" button
@@ -117,7 +107,6 @@ test.beforeEach( async({page}) => {
 
         while (!calendarMonthAndYear.includes(expectedMonthAndYear)) {
             await page.getByRole('button', { name: 'Previous month' }).click()
-
             calendarMonthAndYear =  await page.getByRole('button', { name: 'Choose month and year' }).textContent() ?? ''
         }
         await page.getByRole('gridcell', { name: expectedDate }).click()
@@ -132,8 +121,7 @@ test.beforeEach( async({page}) => {
         const dateAbove = new Date(dateAboveText ?? '')
         const newVisitDate = new Date(newVisitDateText ?? '')
 
-        expect(dateAbove > newVisitDate).toBeTruthy() 
-        // or falsy
+        expect(dateAbove > newVisitDate).toBeTruthy() // or falsy:
         // expect(dateAbove < newVisitDate).toBeFalsy()
 
         //14. Select the "Delete Visit" button for both newly created visits
