@@ -32,7 +32,7 @@ test.beforeEach( async({page}) => {
         const choosePreviousButton = calendarHeader.locator('.mat-calendar-previous-button')
         await chooseDateYearButton.click()
         await choosePreviousButton.click()
-        await page.getByRole('button', { name: '2014', exact: true }).click()
+        await page.getByRole('button', { name: '2014' }).click()
         await page.getByRole('gridcell', { name: '05 2014' }).click()
         await page.getByRole('gridcell', { name: '2014/05/02' }).click()
       
