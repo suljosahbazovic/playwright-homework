@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-import { time } from 'console';
+import { test, expect } from '@playwright/test'
 
 test.beforeEach( async({page}) => {
     await page.goto('/')
