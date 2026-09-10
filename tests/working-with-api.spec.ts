@@ -16,19 +16,15 @@ test('Mocking API Response - Display owners and their pets', async ({ page }) =>
     await page.getByRole('button', {name: 'Owners'}).click()
     await page.getByRole('link', {name: 'Search'}).click()
 
-    const firstOwnerRow = page.getByRole('row', { name: 'Suljo Sahbazovic' })
-    const secondOwnerRow = page.getByRole('row', { name: 'Mirza Sahbazovic' })
-    const firstOwnerPets = firstOwnerRow.locator('td').nth(4)
-    const secondOwnerPets = secondOwnerRow.locator('td').nth(4)
-
-    await expect(firstOwnerRow).toBeVisible()
-    await expect(secondOwnerRow).toBeVisible()
+    const firstOwnerPets = page.getByRole('row', { name: 'Suljo Sahbazovic' }).locator('td').nth(4)
+    const secondOwnerPets = page.getByRole('row', { name: 'Mirza Sahbazovic' }).locator('td').nth(4)
     await expect(firstOwnerPets.locator('tr')).toHaveCount(2)
     await expect(secondOwnerPets.locator('tr')).toHaveCount(5)
+    await expect(firstOwnerPets.locator('tr')).toHaveText(['Lessy', 'Tom & Jerry'])
+    await expect(secondOwnerPets.locator('tr')).toHaveText(['Rocky Balboa', 'Lucy', 'Milo', 'Luna', 'Charlie'])
 
     //2. Add the assertion that the length of the Owners list should be 2
-    const ownersList = page.locator('tbody > tr')
-    await expect(ownersList).toHaveCount(2)
+    await expect(page.locator('tbody > tr')).toHaveCount(2)
 
     //3. Select the first owner. The owner information page should open.
     await page.route('**/api/owners/1001', async route => {
