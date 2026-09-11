@@ -1,4 +1,4 @@
-import { test, expect, request } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 import ownersinformation from '../test-data/ownersinformation.json'
 
 test.beforeEach(async ({ page }) => {
@@ -45,8 +45,6 @@ test('Mocking API Response - Display owners and their pets', async ({ page }) =>
     await expect(ownerPets.nth(1)).toContainText('Tom & Jerry')
 
     //6. The first pet should have a history of 10 visits displayed on the Owner Information page
-    await expect(page.locator('app-pet-list').first().locator('app-visit-list tr:has(td)')).toHaveCount(10)
-
     //7. Add the assertion that the length of the list with visits is 10
-    expect((await page.locator('app-pet-list').first().locator('app-visit-list tr:has(td)').all()).length).toBe(10)
+    await expect(page.locator('app-pet-list').first().locator('app-visit-list tr:has(td)')).toHaveCount(10)
 })
