@@ -1,0 +1,150 @@
+[
+  {
+    "id": 1001,
+    "firstName": "Suljo",
+    "lastName": "Sahbazovic",
+    "address": "Something Street 279E",
+    "city": "Sarajevo",
+    "telephone": "1234567890",
+    "pets": [
+      {
+        "id": 2001,
+        "name": "Lessy",
+        "birthDate": "2020-01-15",
+        "type": {
+          "id": 1,
+          "name": "dog"
+        },
+        "ownerId": 1001,
+        "visits": [
+          {
+            "id": 1,
+            "date": "2026-01-01",
+            "description": "Regular checkup"
+          },
+          {
+            "id": 2,
+            "date": "2026-01-02",
+            "description": "Vaccination"
+          },
+          {
+            "id": 3,
+            "date": "2026-01-03",
+            "description": "Health check"
+          },
+          {
+            "id": 4,
+            "date": "2026-01-04",
+            "description": "Dental check"
+          },
+          {
+            "id": 5,
+            "date": "2026-01-05",
+            "description": "Regular checkup"
+          },
+          {
+            "id": 6,
+            "date": "2026-01-06",
+            "description": "Vaccination"
+          },
+          {
+            "id": 7,
+            "date": "2026-01-07",
+            "description": "Health check"
+          },
+          {
+            "id": 8,
+            "date": "2026-01-08",
+            "description": "Regular checkup"
+          },
+          {
+            "id": 9,
+            "date": "2026-01-09",
+            "description": "Dental check"
+          },
+          {
+            "id": 10,
+            "date": "2026-01-10",
+            "description": "Final checkup"
+          }
+        ]
+      },
+      {
+        "id": 2002,
+        "name": "Tom & Jerry",
+        "birthDate": "2021-03-20",
+        "type": {
+          "id": 2,
+          "name": "cat"
+        },
+        "ownerId": 1001,
+        "visits": []
+      }
+    ]
+  },
+  {
+    "id": 1002,
+    "firstName": "Mirza",
+    "lastName": "Sahbazovic",
+    "address": "Something Street 279D",
+    "city": "Mostar",
+    "telephone": "9876543210",
+    "pets": [
+      {
+        "id": 3001,
+        "name": "Rocky Balboa",
+        "birthDate": "2019-05-10",
+        "type": {
+          "id": 1,
+          "name": "dog"
+        },
+        "ownerId": 1002,
+        "visits": []
+      },
+      {
+        "id": 3002,
+        "name": "Lucy",
+        "birthDate": "2020-07-12",
+        "type": {
+          "id": 2,
+          "name": "cat"
+        },
+        "ownerId": 1002,
+        "visits": []
+      },
+      {
+        "id": 3003,
+        "name": "Milo",
+        "birthDate": "2021-02-18",
+        "type": {
+          "id": 1,
+          "name": "dog"
+        },
+        "ownerId": 1002,
+        "visits": []
+      },
+      {
+        "id": 3004,
+        "name": "Luna",
+        "birthDate": "2022-01-25",
+        "type": {
+          "id": 2,
+          "name": "cat"
+        },
+        "ownerId": 1002,
+        "visits": []
+      },
+      {
+        "id": 3005,
+        "name": "Charlie",
+        "birthDate": "2018-11-30",
+        "type": {
+          "id": 1,
+          "name": "dog"
+        },
+        "ownerId": 1002,
+        "visits": []
+      }
+    ]
+  }
+]
