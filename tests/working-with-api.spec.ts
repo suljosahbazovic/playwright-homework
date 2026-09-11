@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import ownersinformation from '../test-data/ownersinformation.json'
+import specialties from '../test-data/specialties.json'
 
 test.beforeEach(async ({ page }) => {
   await page.route('*/**/api/owners', async route => {
@@ -47,4 +48,26 @@ test('Mocking API Response - Display owners and their pets', async ({ page }) =>
     //6. The first pet should have a history of 10 visits displayed on the Owner Information page
     //7. Add the assertion that the length of the list with visits is 10
     await expect(page.locator('app-pet-list').first().locator('app-visit-list tr:has(td)')).toHaveCount(10)
+})
+
+test('Intercepting API Response - Display Veterinarians page', async ({ page }) => {
+  //1. Navigate to the Veterinarians page. Intercept the API response for the "vets" endpoint. 
+  //2. For the current response, "Sharon Jenkins" does not have any specialties. Modify the response by adding 10 specialties for this vet
+  //3. Add an assertion that the 10 specialties added are displayed on the page for "Sharon Jenkins"
+  await page.route('*/**/api/vets*', async route => {
+    const response = await route.fetch()
+    const responseBody = await response.json()    
+    const sharonJenkinsSpecialties = responseBody.find(
+            (vet: { firstName: string; lastName: string }) =>
+                vet.firstName === 'Sharon' && vet.lastName === 'Jenkins'
+    )        
+    sharonJenkinsSpecialties.specialties = specialties
+    await route.fulfill({ response, json: responseBody })
+  })
+  await page.getByRole('button', {name: 'Veterinarians'}).click()
+  const vetsResponse = page.waitForResponse('*/**/api/vets*')
+  await page.getByRole('link', {name: 'All'}).click()
+  await vetsResponse
+  await expect(page.locator('tr', { hasText: 'Sharon Jenkins' }).locator('td').nth(1).locator('div')).toHaveCount(10)
+  await expect(page.locator('tr', { hasText: 'Sharon Jenkins' }).locator('td').nth(1).locator('div')).toHaveText(specialties.map(specialty => specialty.name))
 })
