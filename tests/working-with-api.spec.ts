@@ -55,19 +55,24 @@ test('Intercepting API Response - Display Veterinarians page', async ({ page }) 
   //2. For the current response, "Sharon Jenkins" does not have any specialties. Modify the response by adding 10 specialties for this vet
   //3. Add an assertion that the 10 specialties added are displayed on the page for "Sharon Jenkins"
   await page.route('*/**/api/vets*', async route => {
-    const response = await route.fetch()
-    const responseBody = await response.json()    
-    const sharonJenkinsSpecialties = responseBody.find(
-            (vet: { firstName: string; lastName: string }) =>
-                vet.firstName === 'Sharon' && vet.lastName === 'Jenkins'
-    )        
-    sharonJenkinsSpecialties.specialties = specialties
-    await route.fulfill({ response, json: responseBody })
+    try{
+      const response = await route.fetch()
+      const responseBody = await response.json()    
+      const sharonJenkinsSpecialties = responseBody.find(
+              (vet: { firstName: string; lastName: string }) =>
+                  vet.firstName === 'Sharon' && vet.lastName === 'Jenkins'
+      )        
+      sharonJenkinsSpecialties.specialties = specialties
+      await route.fulfill({ response, json: responseBody })
+
+    } catch (error) {
+      await route.abort()
+    }
   })
   await page.getByRole('button', {name: 'Veterinarians'}).click()
-  const vetsResponse = page.waitForResponse('*/**/api/vets*')
+  const vetsResponsePromise = page.waitForResponse('*/**/api/vets*')
   await page.getByRole('link', {name: 'All'}).click()
-  await vetsResponse
+  await vetsResponsePromise
   await expect(page.locator('tr', { hasText: 'Sharon Jenkins' }).locator('td').nth(1).locator('div')).toHaveCount(10)
   await expect(page.locator('tr', { hasText: 'Sharon Jenkins' }).locator('td').nth(1).locator('div')).toHaveText(specialties.map(specialty => specialty.name))
 })
