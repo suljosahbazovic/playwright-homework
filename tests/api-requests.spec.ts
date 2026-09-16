@@ -77,13 +77,61 @@ test('Performing API Request - New specialty is displayed', async ({ page, reque
         data: { name: 'api testing ninja' }
     })
     expect(specialtyResponse.status()).toEqual(201)
+    const specialtiesJSON = await specialtyResponse.json()
+    const specialtiesId = specialtiesJSON.id
+
+    const specialtiesResponse = await request.get('https://petclinic-api.bondaracademy.com/petclinic/api/specialties')
+    const specialties = await specialtiesResponse.json()
+    const surgery = specialties.find(
+        (specialty: { id: number; name: string }) => specialty.name === 'surgery'
+    )
 
     //2. Using API request, create a new veterinarian with a specialty "surgery". Add assertion of the response status code.
     const veterinarianResponse = await request.post('https://petclinic-api.bondaracademy.com/petclinic/api/vets', {
-        data: { firstName: 'API', lastName: 'Testing', specialties: [
-                {
-                    name: 'surgery'
-                }]
-        }})
+            data: { firstName: 'API',
+                    lastName: 'Testing',
+                    specialties: [{
+                        id:     surgery.id,
+                        name:   surgery.name
+                    }]}
+    })
     expect(veterinarianResponse.status()).toEqual(201)
+    const veterinarianResponseBody = await veterinarianResponse.json()
+    const veterinarianId = veterinarianResponseBody.id
+
+    //3. Navigate to the Veterinarians page
+    await page.getByRole('button', { name: 'Veterinarians' }).click()
+    await page.getByRole('link', { name: 'All' }).click()
+
+    //4. Add the assertion that newly created veterinarian is available in the list and it has specialty "surgery"
+    const veterinarianAPITestingRow = page.getByRole('row', { name: 'API Testing' })
+    await expect(veterinarianAPITestingRow).toContainText('surgery')
+
+    //5. Click on the "Edit Vet" button
+    await veterinarianAPITestingRow.getByRole('button', { name: 'Edit Vet' }).click()
+
+    //6. On Edit Veterinarian page, change the specialty from "surgery" to "api testing ninja" and click "Save Vet" button
+    await page.locator('.dropdown-display').click()
+    await page.getByRole('checkbox', { name: 'api testing ninja'}).check()
+    await page.getByRole('checkbox', { name: 'surgery'}).uncheck()
+    await page.locator('.dropdown-display').click()
+    await page.getByRole('button', { name: 'Save Vet' }).click()
+
+    //7. Add the assertion that the veterinarian has a specialty "api testing ninja"
+    await expect(veterinarianAPITestingRow).toContainText('api testing ninja')
+
+    //8. Using an API request, delete the created test veterinarian. Add assertion of the response status code
+    const deleteVeterinarianAPITestingResponse = await request.delete(`https://petclinic-api.bondaracademy.com/petclinic/api/vets/${veterinarianId}`)
+    expect(deleteVeterinarianAPITestingResponse.status()).toEqual(204)
+
+    //9. Using API request, delete the specialty "api testing ninja". Add assertion of the response status code
+    const deleteSpecialtiesAPITestingResponse = await request.delete(`https://petclinic-api.bondaracademy.com/petclinic/api/specialties/${specialtiesId}`)
+    expect(deleteSpecialtiesAPITestingResponse.status()).toEqual(204)
+
+    //10. Navigate to the Specialties page and add an assertion that "api testing ninja" does not exist in the list of specialties
+    await page.getByRole('link', { name: 'Specialties' }).click()
+    await expect(page.locator('input[name="spec_name"]').last()).not.toHaveValue('api testing ninja')
+    await page.getByRole('button', { name: 'Veterinarians' }).click()
+    await page.getByRole('link', { name: 'All' }).click()
+    await expect(veterinarianAPITestingRow).not.toBeVisible()
 })
