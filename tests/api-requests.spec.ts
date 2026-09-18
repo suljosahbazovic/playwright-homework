@@ -19,6 +19,7 @@ test('Performing API Request - Validation of delete specialty', async ({ page, r
 
     //4. Click the "Delete" button for the "api testing expert" specialty
     await page.getByRole('row', { name: 'api testing expert' }).getByRole('button', { name: 'Delete' }).click()
+    await page.waitForResponse('**/*/specialties/*')
 
     //5. Add an assertion that the specialty "api testing expert" is deleted from the list of specialties
     await expect(page.locator('input[name="spec_name"]').last()).not.toHaveValue('api testing expert')
@@ -55,7 +56,7 @@ test('Performing API Request - Add and delete veterinarian', async ({ page, requ
     await page.getByRole('button', { name: 'Save Vet' }).click()
 
     //6. Add the assertion that the "dentistry" specialty is displayed for the test veterinarian
-    await expect(veterinarianRow).toContainText('dentistry')
+    await expect(veterinarianRow.locator('td').nth(1)).toContainText('dentistry')
 
     //7. Using API request, delete the created test veterinarian. Add assertion of response status code. (Tip: use the ID from the step 1)
     const deleteVeterinarianResponse = await request.delete(`https://petclinic-api.bondaracademy.com/petclinic/api/vets/${veterinarianId}`)
@@ -105,7 +106,7 @@ test('Performing API Request - New specialty is displayed', async ({ page, reque
 
     //4. Add the assertion that newly created veterinarian is available in the list and it has specialty "surgery"
     const veterinarianAPITestingRow = page.getByRole('row', { name: 'API Testing' })
-    await expect(veterinarianAPITestingRow).toContainText('surgery')
+    await expect(veterinarianAPITestingRow.locator('td').nth(1)).toContainText('surgery')
 
     //5. Click on the "Edit Vet" button
     await veterinarianAPITestingRow.getByRole('button', { name: 'Edit Vet' }).click()
@@ -130,8 +131,10 @@ test('Performing API Request - New specialty is displayed', async ({ page, reque
 
     //10. Navigate to the Specialties page and add an assertion that "api testing ninja" does not exist in the list of specialties
     await page.getByRole('link', { name: 'Specialties' }).click()
+    await page.waitForResponse('**/*/specialties')
     await expect(page.locator('input[name="spec_name"]').last()).not.toHaveValue('api testing ninja')
     await page.getByRole('button', { name: 'Veterinarians' }).click()
     await page.getByRole('link', { name: 'All' }).click()
+    await page.waitForResponse('**/*/vets')
     await expect(veterinarianAPITestingRow).not.toBeVisible()
 })
