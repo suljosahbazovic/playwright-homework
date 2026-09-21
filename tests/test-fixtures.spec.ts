@@ -23,12 +23,11 @@ export const test = base.extend<{ testData: Fixtures }>({
         const ownerResponseBody = await ownerResponse.json()
         const ownerId = ownerResponseBody.id
 
-        const petResponse = await request.post(
-            `https://petclinic-api.bondaracademy.com/petclinic/api/owners/${ownerId}/pets`,
+        const petResponse = await request.post(`https://petclinic-api.bondaracademy.com/petclinic/api/owners/${ownerId}/pets`,
             {
                 data: {
                     name: 'Micky Dog',
-                    birthDate: '2000-09-07',
+                    birthDate: '2024-10-02',
                     type: {
                         name: 'dog',
                         id: 2936
@@ -40,8 +39,7 @@ export const test = base.extend<{ testData: Fixtures }>({
         const petJSON = await petResponse.json()
         const petId = petJSON.id
 
-        const visitResponse = await request.post(
-            `https://petclinic-api.bondaracademy.com/petclinic/api/owners/${ownerId}/pets/${petId}/visits`,
+        const visitResponse = await request.post(`https://petclinic-api.bondaracademy.com/petclinic/api/owners/${ownerId}/pets/${petId}/visits`,
             {
                 data: {
                     date: '2026-07-20',
@@ -65,10 +63,6 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('Test with fixture', async ({ page, testData }) => {
-    // console.log(testData.ownerId)
-    // console.log(testData.petId)
-    // console.log(testData.visitId)
-
     await page.getByRole('button', {name: 'Owners'}).click()
     await page.getByRole('link', {name: 'Search'}).click()
 
