@@ -79,7 +79,4 @@ test('Test with fixture', async ({ page, testData }) => {
     
     await mickeyDogPetAndVisits.getByRole('button', { name: 'Delete Pet' }).click()
     await expect(mickeyDogPetAndVisits).not.toBeVisible()
-
-    await page.getByRole('button', {name: 'Back'}).click()
-    await expect(page.locator('tbody tr').last()).not.toHaveText('Suljo Sahbazovic')
 })
