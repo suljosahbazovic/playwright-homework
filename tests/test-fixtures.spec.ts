@@ -15,10 +15,11 @@ test('Test with fixture', async ({ page, ownerWithPetAndVisit }) => {
     await page.getByRole('link', { name: 'Suljo Sahbazovic' }).click()
 
     const mickeyDogPetAndVisits = page.locator('app-pet-list', { hasText: 'Micky Dog' })
-    const visit = mickeyDogPetAndVisits.locator('app-visit-list tr').filter({ hasText: 'massage therapy' })
-    await mickeyDogPetAndVisits.locator('app-visit-list tr').nth(1).getByRole('button', { name: 'Delete Visit' }).click()
-    await expect(visit).not.toBeVisible()
-    
+    const massageTherapyVisitRow = mickeyDogPetAndVisits.locator('app-visit-list tr').filter({ hasText: 'massage therapy' })
+    await massageTherapyVisitRow.getByRole('button', { name: 'Delete Visit' }).click()
+    await page.waitForResponse('**/*/visits/*')
+    await expect(massageTherapyVisitRow).not.toBeVisible()
     await mickeyDogPetAndVisits.getByRole('button', { name: 'Delete Pet' }).click()
+    await page.waitForResponse('**/*/pets/*')
     await expect(mickeyDogPetAndVisits).not.toBeVisible()
 })
